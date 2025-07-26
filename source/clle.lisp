@@ -1,6 +1,9 @@
 (defmacro define-clle (imports-and-exports)
   `(uiop:define-package #:ck-clle
        (:use #:cl)
+     (:use-reexport #:ck-clle/list)
+     (:use-reexport #:ck-clle/package)
+     (:use-reexport #:ck-clle/string)
      ,@(mapcan #'identity (mapcar (lambda (ie)
                                     `((:import-from ,(car ie) ,@(cdr ie))
                                       (:export ,@(cdr ie))))
@@ -27,4 +30,7 @@
 
 #+sbcl
 (progn
-  (sb-ext:lock-package 'ck-clle))
+  (sb-ext:lock-package 'ck-clle)
+  (sb-ext:lock-package 'ck-clle/list)
+  (sb-ext:lock-package 'ck-clle/package)
+  (sb-ext:lock-package 'ck-clle/string))
