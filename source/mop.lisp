@@ -1,0 +1,75 @@
+(defpackage #:ck-clle/mop
+  (:use #:cl)
+  (:local-nicknames (#:mop #:closer-mop))
+  (:export #:alias-parent-readers-for-child #:aliased-defclass))
+
+(in-package #:ck-clle/mop)
+
+(defun alias-parent-readers-for-child (child-class-symbol &rest parent-class-symbols)
+  "Alias the readers of the parent classes for the child class.
+
+If the parent class symbols are not provided, uses the direct superclasses of the child class.
+If a parent reader is exported, the child alias will also be exported."
+  (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
+      (error "One element in ~A is not a parent class of ~A."
+             parent-class-symbols child-class-symbol))
+  (let ((parent-classes (or (mapcar #'find-class parent-class-symbols)
+                            (mop:class-direct-superclasses (find-class child-class-symbol))))
+        (child-package (symbol-package child-class-symbol)))
+    (loop :for parent-class :in parent-classes :do
+      ;; Ensure the class is finalized before accessing its precedence list
+      (unless (mop:class-finalized-p parent-class)
+        (mop:finalize-inheritance parent-class))
+      ;; Process direct slots of the parent and all its ancestors
+      (loop :for ancestor-class :in (cons parent-class
+                                           (mop:class-precedence-list parent-class)) :do
+        (loop :for slot :in (mop:class-direct-slots ancestor-class) :do
+          (loop :for reader :in (mop:slot-definition-readers slot) :do
+            (let* ((prefix (symbol-name (class-name ancestor-class)))
+                   (reader-name (symbol-name reader))
+                   (reader-name-without-prefix
+                     (if (and (>= (length reader-name) (length prefix))
+                              (string= prefix reader-name :end2 (length prefix)))
+                         (subseq reader-name (length prefix))
+                         reader-name))
+                   (new-reader-symbol (intern (format nil "~A~A"
+                                                      (symbol-name child-class-symbol)
+                                                      reader-name-without-prefix)
+                                              child-package))
+                   (reader-package (symbol-package reader)))
+              (setf (symbol-function new-reader-symbol) (symbol-function reader))
+              ;; Export the new reader if the original reader is exported
+              (when reader-package
+                (multiple-value-bind (sym status)
+                    (find-symbol (symbol-name reader) reader-package)
+                  (declare (ignore sym))
+                  (when (eq status :external)
+                    (export new-reader-symbol child-package)))))))))))
+
+(defmacro aliased-defclass (name direct-superclasses direct-slots &body options)
+  "Define a class and automatically create reader aliases for inherited slots.
+
+This macro works like DEFCLASS but adds reader method aliases for slots inherited from parent
+classes.  The aliases are named by prefixing the child class name to the slot reader name (after
+removing the parent class prefix).
+
+Example:
+
+  (defclass drawable ()
+    ((left :initarg :left :accessor drawable-left)))
+
+  (aliased-defclass polygon (drawable)
+    ((points :initarg :points :reader polygon-points)))
+
+This creates the class POLYGON and also defines POLYGON-LEFT as an alias for DRAWABLE-LEFT when
+called on POLYGON instances:
+
+  (let ((p (make-instance 'polygon :left 10 :points '())))
+    (polygon-left p))            ; Works, returns 10
+    (drawable-left p))           ; Also works, returns 10
+    (setf (polygon-left p) 20)   ; Works if slot has reader
+    (setf (drawable-left p) 20)) ; Also works"
+  `(progn
+     (defclass ,name ,direct-superclasses ,direct-slots ,@options)
+     (alias-parent-readers-for-child ',name ,@(mapcar (lambda (class) `',class)
+                                                      direct-superclasses))))
