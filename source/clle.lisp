@@ -1,4 +1,4 @@
-(defmacro define-clle (imports-and-exports)
+(defmacro define-clle (foreign-imports-manifest)
   `(uiop:define-package #:ck-clle
        (:use #:cl)
      (:use-reexport #:ck-clle/list)
@@ -8,7 +8,7 @@
      ,@(mapcan #'identity (mapcar (lambda (ie)
                                     `((:import-from ,(car ie) ,@(cdr ie))
                                       (:export ,@(cdr ie))))
-                                  imports-and-exports))))
+                                  foreign-imports-manifest))))
 
 (define-clle
     ((#:alexandria #:with-gensyms
