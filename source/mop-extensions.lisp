@@ -1,9 +1,9 @@
-(defpackage #:ck-clle/mop
+(defpackage #:ck-clle/mop-extensions
   (:use #:cl)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-readers-for-child #:aliased-defclass))
 
-(in-package #:ck-clle/mop)
+(in-package #:ck-clle/mop-extensions)
 
 (defun alias-parent-readers-for-child (child-class-symbol &rest parent-class-symbols)
   "Alias the readers of the parent classes for the child class.

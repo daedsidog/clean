@@ -1,13 +1,9 @@
-(defpackage #:ck-clle/list
+(defpackage #:ck-clle/list-extensions
   (:use #:cl)
   (:import-from #:alexandria #:flatten)
-  (:export #:flatten
-           #:duplicates
-           #:unique
-           #:cars
-           #:recursive-mapl))
+  (:export #:flatten #:duplicates #:unique #:cars #:recursive-mapl))
 
-(in-package #:ck-clle/list)
+(in-package #:ck-clle/list-extensions)
 
 (defun duplicates (data-list &optional &key (test #'eq))
   "Return a list of duplicate elements in DATA-LIST."

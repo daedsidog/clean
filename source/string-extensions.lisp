@@ -1,9 +1,8 @@
-(defpackage #:ck-clle/string
+(defpackage #:ck-clle/string-extensions
   (:use #:cl)
-  (:export #:indent-string
-           #:string-empty-p))
+  (:export #:indent-string #:string-empty-p))
 
-(in-package #:ck-clle/string)
+(in-package #:ck-clle/string-extensions)
 
 (defun string-empty-p (string)
   (not (loop for char across string
