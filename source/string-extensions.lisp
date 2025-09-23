@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defpackage #:ck-clle/string-extensions
   (:use #:cl)
   (:export #:indent-string #:string-empty-p))

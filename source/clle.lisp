@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defmacro define-clle (foreign-imports-manifest)
   `(uiop:define-package #:ck-clle
        (:use #:cl)

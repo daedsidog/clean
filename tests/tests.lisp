@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defpackage #:ck-clle/tests
   (:export #:run-tests)
   (:use #:cl))

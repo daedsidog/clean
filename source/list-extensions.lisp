@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defpackage #:ck-clle/list-extensions
   (:use #:cl)
   (:import-from #:alexandria #:flatten)

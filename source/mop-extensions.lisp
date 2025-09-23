@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defpackage #:ck-clle/mop-extensions
   (:use #:cl)
   (:local-nicknames (#:mop #:closer-mop))

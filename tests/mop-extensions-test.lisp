@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defpackage #:ck-clle/tests/mop
   (:export #:run-tests)
   (:use #:cl #:fiveam #:ck-clle/mop-extensions))

@@ -1,3 +1,5 @@
+;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
+
 (defpackage #:ck-clle/package-extensions
   (:use #:cl)
   (:export #:set-package-nicknames))
