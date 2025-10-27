@@ -18,6 +18,7 @@
                       #:if-let
                       #:iota))
      (#:hash-set   . (#:make-hash-set
+                      #:hash-set-p
                       #:list-to-hs
                       #:hs-insert
                       #:hs-ninsert
