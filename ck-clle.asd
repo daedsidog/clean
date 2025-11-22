@@ -1,7 +1,7 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
 (defsystem #:ck-clle
-  :depends-on (#:alexandria #:closer-mop #:hash-set)
+  :depends-on (#:alexandria #:closer-mop #:hash-set #:trivial-package-local-nicknames)
   :components ((:module "source"
                 :components ((:file "list-extensions")
                              (:file "package-extensions")
