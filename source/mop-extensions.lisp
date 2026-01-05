@@ -3,7 +3,8 @@
 (defpackage #:ck-clle/mop-extensions
   (:use #:cl)
   (:local-nicknames (#:mop #:closer-mop))
-  (:export #:alias-parent-readers-for-child #:aliased-defclass))
+  (:export #:alias-parent-readers-for-child
+           #:defclass*))
 
 (in-package #:ck-clle/mop-extensions)
 
@@ -48,20 +49,24 @@ If a parent reader is exported, the child alias will also be exported."
                   (when (eq status :external)
                     (export new-reader-symbol child-package)))))))))))
 
-(defmacro aliased-defclass (name direct-superclasses direct-slots &body options)
-  "Define a class and automatically create reader aliases for inherited slots.
+(defmacro defclass* (name direct-superclasses direct-slots &body options)
+  "Extended DEFCLASS with additional options.
 
-This macro works like DEFCLASS but adds reader method aliases for slots inherited from parent
-classes.  The aliases are named by prefixing the child class name to the slot reader name (after
-removing the parent class prefix).
+Supports all standard DEFCLASS options plus:
+
+  (:alias-parent-readers T)
+    When non-nil, creates reader method aliases for slots inherited from parent classes.
+    The aliases are named by prefixing the child class name to the slot reader name
+    (after removing the parent class prefix).
 
 Example:
 
   (defclass drawable ()
     ((left :initarg :left :accessor drawable-left)))
 
-  (aliased-defclass polygon (drawable)
-    ((points :initarg :points :reader polygon-points)))
+  (defclass* polygon (drawable)
+    ((points :initarg :points :reader polygon-points))
+    (:alias-parent-readers t))
 
 This creates the class POLYGON and also defines POLYGON-LEFT as an alias for DRAWABLE-LEFT when
 called on POLYGON instances:
@@ -71,7 +76,11 @@ called on POLYGON instances:
     (drawable-left p))           ; Also works, returns 10
     (setf (polygon-left p) 20)   ; Works if slot has reader
     (setf (drawable-left p) 20)) ; Also works"
-  `(progn
-     (defclass ,name ,direct-superclasses ,direct-slots ,@options)
-     (alias-parent-readers-for-child ',name ,@(mapcar (lambda (class) `',class)
-                                                      direct-superclasses))))
+  (let* ((alias-parent-readers (second (find :alias-parent-readers options :key #'car)))
+         (standard-options (remove :alias-parent-readers options :key #'car)))
+    `(progn
+       (defclass ,name ,direct-superclasses ,direct-slots ,@standard-options)
+       ,@(when alias-parent-readers
+           `((alias-parent-readers-for-child ',name
+                                             ,@(mapcar (lambda (class) `',class)
+                                                       direct-superclasses)))))))

@@ -95,10 +95,11 @@
                        ((slot1 :initarg :slot1 :reader exported-parent-slot1)
                         (slot2 :initarg :slot2 :reader exported-parent-slot2)
                         (slot3 :initarg :slot3 :reader exported-parent-slot3)))")) ; Not exported
-             ;; Use ALIASED-DEFCLASS to create child
+             ;; Use DEFCLASS* to create child
              (eval (read-from-string
-                    "(ck-clle/mop-extensions:aliased-defclass exported-child (exported-parent)
-                       ((child-slot :initarg :child-slot :reader exported-child-child-slot)))")))
+                    "(ck-clle/mop-extensions:defclass* exported-child (exported-parent)
+                       ((child-slot :initarg :child-slot :reader exported-child-child-slot))
+                       (:alias-parent-readers t))")))
            ;; Test that the aliased readers for exported parent readers are exported
            (multiple-value-bind (sym1 status1)
                (find-symbol "EXPORTED-CHILD-SLOT1" test-package)
@@ -116,11 +117,12 @@
            ;; Test deeper inheritance - export child reader for grandchild test
            (export (intern "EXPORTED-CHILD-CHILD-SLOT" test-package) test-package)
            (let ((*package* test-package))
-             ;; Create grandchild using ALIASED-DEFCLASS
+             ;; Create grandchild using DEFCLASS*
              (eval (read-from-string
-                    "(ck-clle/mop-extensions:aliased-defclass exported-grandchild (exported-child)
+                    "(ck-clle/mop-extensions:defclass* exported-grandchild (exported-child)
                        ((grandchild-slot :initarg :grandchild-slot
-                                         :reader exported-grandchild-grandchild-slot)))")))
+                                         :reader exported-grandchild-grandchild-slot))
+                       (:alias-parent-readers t))")))
            ;; Test that grandchild inherits export status from both parent and grandparent
            (multiple-value-bind (sym status)
                (find-symbol "EXPORTED-GRANDCHILD-SLOT1" test-package)
@@ -144,10 +146,11 @@
            ;; Test even deeper (great-grandchild)
            (let ((*package* test-package))
              (eval (read-from-string
-                    "(ck-clle/mop-extensions:aliased-defclass exported-great-grandchild
+                    "(ck-clle/mop-extensions:defclass* exported-great-grandchild
                          (exported-grandchild)
                        ((gg-slot :initarg :gg-slot
-                                 :reader exported-great-grandchild-gg-slot)))")))
+                                 :reader exported-great-grandchild-gg-slot))
+                       (:alias-parent-readers t))")))
            ;; Verify that great-grandchild still inherits proper export status
            (multiple-value-bind (sym status)
                (find-symbol "EXPORTED-GREAT-GRANDCHILD-SLOT1" test-package)
