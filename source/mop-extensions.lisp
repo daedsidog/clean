@@ -12,7 +12,7 @@
   "Alias the readers of the parent classes for the child class.
 
 If the parent class symbols are not provided, uses the direct superclasses of the child class.
-If a parent reader is exported, the child alias will also be exported."
+If a parent reader or the direct parent's alias is exported, the child alias will also be exported."
   (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
       (error "One element in ~A is not a parent class of ~A."
              parent-class-symbols child-class-symbol))
@@ -41,13 +41,32 @@ If a parent reader is exported, the child alias will also be exported."
                                               child-package))
                    (reader-package (symbol-package reader)))
               (setf (symbol-function new-reader-symbol) (symbol-function reader))
-              ;; Export the new reader if the original reader is exported
-              (when reader-package
-                (multiple-value-bind (sym status)
-                    (find-symbol (symbol-name reader) reader-package)
-                  (declare (ignore sym))
-                  (when (eq status :external)
-                    (export new-reader-symbol child-package)))))))))))
+              ;; Also alias the SETF function if it exists
+              (when (fboundp `(setf ,reader))
+                (setf (fdefinition `(setf ,new-reader-symbol))
+                      (fdefinition `(setf ,reader))))
+              ;; Export the new reader if the original reader or direct parent's alias is exported
+              (let ((should-export nil))
+                ;; Check original reader
+                (when reader-package
+                  (multiple-value-bind (sym status)
+                      (find-symbol (symbol-name reader) reader-package)
+                    (declare (ignore sym))
+                    (when (eq status :external)
+                      (setf should-export t))))
+                ;; Check direct parent's alias
+                (unless should-export
+                  (let* ((parent-name (format nil "~A~A"
+                                              (symbol-name (class-name parent-class))
+                                              reader-name-without-prefix))
+                         (parent-pkg (symbol-package (class-name parent-class))))
+                    (multiple-value-bind (sym status)
+                        (find-symbol parent-name parent-pkg)
+                      (declare (ignore sym))
+                      (when (eq status :external)
+                        (setf should-export t)))))
+                (when should-export
+                  (export new-reader-symbol child-package))))))))))
 
 (defmacro defclass* (name direct-superclasses direct-slots &body options)
   "Extended DEFCLASS with additional options.
