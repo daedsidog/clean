@@ -30,9 +30,9 @@
   ((school :accessor kid-school :initarg :school)))
 
 (test single-parent-reader-aliasing
-  "Test that ALIAS-PARENT-READERS-FOR-CHILD works correctly with one parent class."
+  "Test that ALIAS-PARENT-CLASS-READERS-FOR-CHILD works correctly with one parent class."
   ;; Create alias readers for child class based on single parent
-  (alias-parent-readers-for-child 'child 'parent)
+  (alias-parent-class-readers-for-child 'child 'parent)
   ;; Create test instance
   (let ((instance (make-instance 'child
                                  :name "John"
@@ -49,9 +49,9 @@
     (is (= 25 (funcall (symbol-function 'child-age) instance)))))
 
 (test dual-parent-reader-aliasing
-  "Test that ALIAS-PARENT-READERS-FOR-CHILD works correctly with two parent classes."
+  "Test that ALIAS-PARENT-CLASS-READERS-FOR-CHILD works correctly with two parent classes."
   ;; Create alias readers for child class based on multiple parents
-  (alias-parent-readers-for-child 'kid 'father 'mother)
+  (alias-parent-class-readers-for-child 'kid 'father 'mother)
   ;; Create test instance
   (let ((instance (make-instance 'kid
                                  :job "Engineer"
@@ -73,7 +73,7 @@
     ((unrelated-slot :accessor unrelated-class-unrelated-slot)))
   ;; This should throw an error because UNRELATED-CLASS is not a parent of CHILD.
   (signals error
-    (alias-parent-readers-for-child 'child 'unrelated-class)))
+    (alias-parent-class-readers-for-child 'child 'unrelated-class)))
 
 (test auto-export-aliased-readers
   "Test that aliased readers are automatically exported when parent readers are exported."

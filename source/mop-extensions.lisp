@@ -3,12 +3,12 @@
 (defpackage #:ck-clle/mop-extensions
   (:use #:cl)
   (:local-nicknames (#:mop #:closer-mop))
-  (:export #:alias-parent-readers-for-child
+  (:export #:alias-parent-class-readers-for-child
            #:defclass*))
 
 (in-package #:ck-clle/mop-extensions)
 
-(defun alias-parent-readers-for-child (child-class-symbol &rest parent-class-symbols)
+(defun alias-parent-class-readers-for-child (child-class-symbol &rest parent-class-symbols)
   "Alias the readers of the parent classes for the child class.
 
 If the parent class symbols are not provided, uses the direct superclasses of the child class.
@@ -100,6 +100,6 @@ called on POLYGON instances:
     `(progn
        (defclass ,name ,direct-superclasses ,direct-slots ,@standard-options)
        ,@(when alias-parent-readers
-           `((alias-parent-readers-for-child ',name
+           `((alias-parent-class-readers-for-child ',name
                                              ,@(mapcar (lambda (class) `',class)
                                                        direct-superclasses)))))))
