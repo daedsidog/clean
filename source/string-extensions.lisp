@@ -7,10 +7,11 @@
 (in-package #:ck-clle/string-extensions)
 
 (defun string-empty-p (string)
+  "Return T if STRING contains no characters."
   (not (loop :for char :across string :thereis char)))
 
 (defun indent-string (string indentation-string)
-  "Prepend INDENTATION-STRING to each line in STRING."
+  "Return the string indented with INDENTATION-STRING prepended to each line."
   (with-output-to-string (out)
     (with-input-from-string (in string)
       (let ((is-first-line t))

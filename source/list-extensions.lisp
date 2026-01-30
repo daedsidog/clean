@@ -37,15 +37,13 @@
                       :finally (return cars))))
       (flatten cars))))
 
-(defun recursive-mapl (fn list)
-  "Apply FN to all sublists in LIST and return LIST.
-
-Recursive version of CL:MAPL."
-  (check-type fn function)
+(defun recursive-mapl (function list)
+  "Apply FUNCTION to all sublists in LIST and return LIST."
+  (check-type function function)
   (flet ((helper (list)
            (loop :for item :in list
                  :when (listp item)
-                   :do (recursive-mapl fn item)
-                       (mapl fn item))))
+                   :do (recursive-mapl function item)
+                       (mapl function item))))
     (helper list))
   list)

@@ -11,8 +11,8 @@
 (defun alias-parent-class-readers-for-child (child-class-symbol &rest parent-class-symbols)
   "Alias the readers of the parent classes for the child class.
 
-If the parent class symbols are not provided, uses the direct superclasses of the child class.
-If a parent reader or the direct parent's alias is exported, the child alias will also be exported."
+If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child class are used.
+If a parent reader or the direct parent's alias is exported, the child alias is also exported."
   (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
       (error "One element in ~A is not a parent class of ~A."
              parent-class-symbols child-class-symbol))
@@ -69,32 +69,27 @@ If a parent reader or the direct parent's alias is exported, the child alias wil
                   (export new-reader-symbol child-package))))))))))
 
 (defmacro defclass* (name direct-superclasses direct-slots &body options)
-  "Extended DEFCLASS with additional options.
+  "Define a class with extended DEFCLASS options:
 
-Supports all standard DEFCLASS options plus:
-
-  (:alias-parent-readers T)
-    When non-nil, creates reader method aliases for slots inherited from parent classes.
-    The aliases are named by prefixing the child class name to the slot reader name
-    (after removing the parent class prefix).
-
-Example:
-
-  (defclass drawable ()
-    ((left :initarg :left :accessor drawable-left)))
-
-  (defclass* polygon (drawable)
-    ((points :initarg :points :reader polygon-points))
-    (:alias-parent-readers t))
-
-This creates the class POLYGON and also defines POLYGON-LEFT as an alias for DRAWABLE-LEFT when
-called on POLYGON instances:
-
-  (let ((p (make-instance 'polygon :left 10 :points '())))
-    (polygon-left p))            ; Works, returns 10
-    (drawable-left p))           ; Also works, returns 10
-    (setf (polygon-left p) 20)   ; Works if slot has reader
-    (setf (drawable-left p) 20)) ; Also works"
+ALIAS-PARENT-READERS ::= generalized-boolean"
+  ;; When true, calls ALIAS-PARENT-CLASS-READERS-FOR-CHILD on the class.
+  ;;
+  ;; Example:
+  ;;
+  ;;   (defclass drawable ()
+  ;;     ((left :initarg :left :accessor drawable-left)))
+  ;;
+  ;;   (defclass* polygon (drawable)
+  ;;     ((points :initarg :points :reader polygon-points))
+  ;;     (:alias-parent-readers t))
+  ;;
+  ;; This creates POLYGON and also defines POLYGON-LEFT as an alias for DRAWABLE-LEFT:
+  ;;
+  ;;   (let ((p (make-instance 'polygon :left 10 :points '())))
+  ;;     (polygon-left p))            ; => 10
+  ;;     (drawable-left p))           ; => 10
+  ;;     (setf (polygon-left p) 20)   ; Works if slot has writer
+  ;;     (setf (drawable-left p) 20)) ; Works
   (let* ((alias-parent-readers (second (find :alias-parent-readers options :key #'car)))
          (standard-options (remove :alias-parent-readers options :key #'car)))
     `(progn

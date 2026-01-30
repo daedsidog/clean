@@ -10,12 +10,10 @@
 (in-package #:ck-clle/package-extensions)
 
 (defun set-package-nicknames (package nicknames)
-  "Set global nicknames for PACKAGE.
-NICKNAMES is a list of nickname strings or symbols."
+  "Return the package renamed after setting global NICKNAMES for PACKAGE."
   (rename-package package package nicknames))
 
 (defun set-package-local-nicknames (package nicknames-alist)
-  "Set package-local nicknames for PACKAGE.
-NICKNAMES-ALIST is an alist of (nickname . actual-package-name) pairs."
+  "Set package-local nicknames for PACKAGE from NICKNAMES-ALIST."
   (loop :for (nickname . actual-package) :in nicknames-alist
         :do (add-package-local-nickname nickname actual-package package)))
