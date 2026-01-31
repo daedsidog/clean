@@ -7,7 +7,7 @@
 
 (in-package #:ck-clle/list-extensions)
 
-(defun duplicates (data-list &optional &key (test #'eq))
+(defun duplicates (data-list &optional &key (test #'eqp))
   "Return a list of duplicate elements in DATA-LIST."
   (check-type data-list list)
   (let ((hash (make-hash-table :test test)))
@@ -16,7 +16,7 @@
           :collect x :into dupes
           :finally (return dupes))))
 
-(defun unique (data-list &optional &key (test #'eq))
+(defun unique (data-list &optional &key (test #'eqp))
   "Return a list of unique elements in DATA-LIST."
   (let ((hash (make-hash-table :test test)))
     (loop :for x :in data-list
