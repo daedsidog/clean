@@ -4,7 +4,8 @@
   (:use #:cl)
   (:import-from #:trivial-package-local-nicknames
                 #:add-package-local-nickname)
-  (:export #:package-local-nicknames))
+  (:export #:package-local-nicknames
+           #:define-package-local-nicknames))
 
 (in-package #:ck-clle/package-extensions)
 
@@ -22,8 +23,14 @@
 
 (defun (setf package-local-nicknames) (nicknames-alist package)
   "Set package-local nicknames for PACKAGE from NICKNAMES-ALIST."
-  (loop :for (nickname . actual-package) :in nicknames-alist
+  (loop :for (nickname actual-package) :in nicknames-alist
         :do (add-package-local-nickname nickname actual-package package)))
+
+(defmacro define-package-local-nicknames (&rest nickname-pairs)
+  "Define package-local nicknames for the current package."
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (setf (package-local-nicknames *package*)
+           ',nickname-pairs)))
 
 #+sbcl
 (eval-when (:compile-toplevel :load-toplevel :execute)
