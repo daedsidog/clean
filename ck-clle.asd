@@ -14,5 +14,5 @@
 (defsystem #:ck-clle/tests
   :depends-on (#:ck-clle #:fiveam)
   :components ((:module "tests"
-                :components ((:file "mop-extensions-test")
-                             (:file "tests" :depends-on ("mop-extensions-test"))))))
+                :components ((:file "mop-extensions-tests")
+                             (:file "clle-tests" :depends-on ("mop-extensions-tests"))))))

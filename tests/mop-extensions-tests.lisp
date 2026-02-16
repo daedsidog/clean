@@ -1,10 +1,10 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:ck-clle/tests/mop
+(defpackage #:ck-clle/tests/mop-extensions-tests
   (:export #:run-tests)
   (:use #:cl #:fiveam #:ck-clle/mop-extensions))
 
-(in-package #:ck-clle/tests/mop)
+(in-package #:ck-clle/tests/mop-extensions-tests)
 
 (defun run-tests ()
   (run! 'mop-test))

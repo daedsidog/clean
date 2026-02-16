@@ -7,4 +7,4 @@
 (in-package #:ck-clle/tests)
 
 (defun run-tests ()
-  (ck-clle/tests/mop:run-tests))
+  (ck-clle/tests/mop-extensions-tests:run-tests))
