@@ -7,7 +7,7 @@
                              (:file "package-extensions")
                              (:file "string-extensions")
                              (:file "mop-extensions")
-                             (:file "clle"
+                             (:file "package"
                               :depends-on ("list-extensions" "package-extensions"
                                            "string-extensions" "mop-extensions"))))))
 
@@ -15,4 +15,4 @@
   :depends-on (#:ck-clle #:fiveam)
   :components ((:module "tests"
                 :components ((:file "mop-extensions-tests")
-                             (:file "clle-tests" :depends-on ("mop-extensions-tests"))))))
+                             (:file "package" :depends-on ("mop-extensions-tests"))))))
