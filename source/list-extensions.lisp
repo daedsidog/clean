@@ -1,11 +1,11 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:ck-clle/list-extensions
+(defpackage #:clean/list-extensions
   (:use #:cl)
   (:import-from #:alexandria #:flatten)
   (:export #:flatten #:duplicates #:unique #:cars #:recursive-mapl))
 
-(in-package #:ck-clle/list-extensions)
+(in-package #:clean/list-extensions)
 
 (defun duplicates (data-list &optional &key (test #'eqp))
   "Return a list of duplicate elements in DATA-LIST."

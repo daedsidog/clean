@@ -1,13 +1,13 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:ck-clle/package-extensions
+(defpackage #:clean/package-extensions
   (:use #:cl)
   (:import-from #:trivial-package-local-nicknames
                 #:add-package-local-nickname)
   (:export #:package-local-nicknames
            #:define-package-local-nicknames))
 
-(in-package #:ck-clle/package-extensions)
+(in-package #:clean/package-extensions)
 
 #+sbcl
 (eval-when (:compile-toplevel :load-toplevel :execute)

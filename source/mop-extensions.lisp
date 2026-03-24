@@ -1,12 +1,12 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:ck-clle/mop-extensions
+(defpackage #:clean/mop-extensions
   (:use #:cl)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
            #:defclass*))
 
-(in-package #:ck-clle/mop-extensions)
+(in-package #:clean/mop-extensions)
 
 (defun alias-parent-class-readers-for-child (child-class-symbol &rest parent-class-symbols)
   "Alias the readers of the parent classes for the child class.

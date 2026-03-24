@@ -1,6 +1,6 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defsystem #:ck-clle
+(defsystem #:clean
   :depends-on (#:alexandria #:closer-mop #:hash-set #:trivial-package-local-nicknames)
   :components ((:module "source"
                 :components ((:file "list-extensions")
@@ -11,8 +11,8 @@
                               :depends-on ("list-extensions" "package-extensions"
                                            "string-extensions" "mop-extensions"))))))
 
-(defsystem #:ck-clle/tests
-  :depends-on (#:ck-clle #:fiveam)
+(defsystem #:clean/tests
+  :depends-on (#:clean #:fiveam)
   :components ((:module "tests"
                 :components ((:file "mop-extensions-tests")
                              (:file "package" :depends-on ("mop-extensions-tests"))))))

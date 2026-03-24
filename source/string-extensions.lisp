@@ -1,10 +1,10 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:ck-clle/string-extensions
+(defpackage #:clean/string-extensions
   (:use #:cl)
   (:export #:indent-string #:string-empty-p))
 
-(in-package #:ck-clle/string-extensions)
+(in-package #:clean/string-extensions)
 
 (defun string-empty-p (string)
   "Return T if STRING contains no characters."

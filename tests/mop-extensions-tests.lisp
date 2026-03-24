@@ -1,10 +1,10 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:ck-clle/tests/mop-extensions-tests
+(defpackage #:clean/tests/mop-extensions-tests
   (:export #:run-tests)
-  (:use #:cl #:fiveam #:ck-clle/mop-extensions))
+  (:use #:cl #:fiveam #:clean/mop-extensions))
 
-(in-package #:ck-clle/tests/mop-extensions-tests)
+(in-package #:clean/tests/mop-extensions-tests)
 
 (defun run-tests ()
   (run! 'mop-test))
@@ -97,7 +97,7 @@
                         (slot3 :initarg :slot3 :reader exported-parent-slot3)))")) ; Not exported
              ;; Use DEFCLASS* to create child
              (eval (read-from-string
-                    "(ck-clle/mop-extensions:defclass* exported-child (exported-parent)
+                    "(clean/mop-extensions:defclass* exported-child (exported-parent)
                        ((child-slot :initarg :child-slot :reader exported-child-child-slot))
                        (:alias-parent-readers t))")))
            ;; Test that the aliased readers for exported parent readers are exported
@@ -119,7 +119,7 @@
            (let ((*package* test-package))
              ;; Create grandchild using DEFCLASS*
              (eval (read-from-string
-                    "(ck-clle/mop-extensions:defclass* exported-grandchild (exported-child)
+                    "(clean/mop-extensions:defclass* exported-grandchild (exported-child)
                        ((grandchild-slot :initarg :grandchild-slot
                                          :reader exported-grandchild-grandchild-slot))
                        (:alias-parent-readers t))")))
@@ -146,7 +146,7 @@
            ;; Test even deeper (great-grandchild)
            (let ((*package* test-package))
              (eval (read-from-string
-                    "(ck-clle/mop-extensions:defclass* exported-great-grandchild
+                    "(clean/mop-extensions:defclass* exported-great-grandchild
                          (exported-grandchild)
                        ((gg-slot :initarg :gg-slot
                                  :reader exported-great-grandchild-gg-slot))

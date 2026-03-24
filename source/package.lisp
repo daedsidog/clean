@@ -1,12 +1,12 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
 (defmacro define-clle (foreign-imports-manifest)
-  `(uiop:define-package #:ck-clle
+  `(uiop:define-package #:clean
        (:use #:cl)
-     (:use-reexport #:ck-clle/list-extensions
-                    #:ck-clle/package-extensions
-                    #:ck-clle/string-extensions
-                    #:ck-clle/mop-extensions)
+     (:use-reexport #:clean/list-extensions
+                    #:clean/package-extensions
+                    #:clean/string-extensions
+                    #:clean/mop-extensions)
      ,@(mapcan #'identity (mapcar (lambda (ie)
                                     `((:import-from ,(car ie) ,@(cdr ie))
                                       (:export ,@(cdr ie))))
@@ -51,7 +51,7 @@
                       #:hs-powerset
                       #:hs-cartesian-product))))
 
-(in-package #:ck-clle)
+(in-package #:clean)
 
 (defmacro alias (sym alias)
   `(progn
@@ -66,8 +66,8 @@
 
 #+sbcl
 (progn
-  (sb-ext:lock-package 'ck-clle)
-  (sb-ext:lock-package 'ck-clle/list-extensions)
-  (sb-ext:lock-package 'ck-clle/package-extensions)
-  (sb-ext:lock-package 'ck-clle/string-extensions)
-  (sb-ext:lock-package 'ck-clle/mop-extensions))
+  (sb-ext:lock-package 'clean)
+  (sb-ext:lock-package 'clean/list-extensions)
+  (sb-ext:lock-package 'clean/package-extensions)
+  (sb-ext:lock-package 'clean/string-extensions)
+  (sb-ext:lock-package 'clean/mop-extensions))
