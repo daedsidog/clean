@@ -3,6 +3,7 @@
 (defmacro define-clle (foreign-imports-manifest)
   `(uiop:define-package #:clean
        (:use #:cl)
+     (:reexport #:cl)
      (:use-reexport #:clean/list-extensions
                     #:clean/package-extensions
                     #:clean/string-extensions
