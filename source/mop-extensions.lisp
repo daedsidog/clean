@@ -2,9 +2,10 @@
 
 (defpackage #:clean/mop-extensions
   (:use #:cl)
+  (:shadow #:defclass)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
-           #:defclass*))
+           #:defclass))
 
 (in-package #:clean/mop-extensions)
 
@@ -68,7 +69,7 @@ If a parent reader or the direct parent's alias is exported, the child alias is 
                 (when should-export
                   (export new-reader-symbol child-package))))))))))
 
-(defmacro defclass* (name direct-superclasses direct-slots &body options)
+(defmacro defclass (name direct-superclasses direct-slots &body options)
   "Define a class with extended DEFCLASS options:
 
 ALIAS-PARENT-READERS ::= generalized-boolean"
@@ -76,10 +77,10 @@ ALIAS-PARENT-READERS ::= generalized-boolean"
   ;;
   ;; Example:
   ;;
-  ;;   (defclass drawable ()
+  ;;   (cl:defclass drawable ()
   ;;     ((left :initarg :left :accessor drawable-left)))
   ;;
-  ;;   (defclass* polygon (drawable)
+  ;;   (defclass polygon (drawable)
   ;;     ((points :initarg :points :reader polygon-points))
   ;;     (:alias-parent-readers t))
   ;;
@@ -93,7 +94,7 @@ ALIAS-PARENT-READERS ::= generalized-boolean"
   (let* ((alias-parent-readers (second (find :alias-parent-readers options :key #'car)))
          (standard-options (remove :alias-parent-readers options :key #'car)))
     `(progn
-       (defclass ,name ,direct-superclasses ,direct-slots ,@standard-options)
+       (cl:defclass ,name ,direct-superclasses ,direct-slots ,@standard-options)
        ,@(when alias-parent-readers
            `((alias-parent-class-readers-for-child ',name
                                              ,@(mapcar (lambda (class) `',class)
