@@ -18,40 +18,7 @@
     ((#:alexandria . (#:with-gensyms
                       #:when-let
                       #:if-let
-                      #:iota))
-     (#:hash-set   . (#:make-hash-set
-                      #:hash-set-p
-                      #:list-to-hs
-                      #:hs-insert
-                      #:hs-ninsert
-                      #:hs-remove
-                      #:hs-nremove
-                      #:hs-remove-if
-                      #:hs-nremove-if
-                      #:hs-remove-if-not
-                      #:hs-nremove-if-not
-                      #:hs-memberp
-                      #:hs-count
-                      #:hs-empty-p
-                      #:hs-map
-                      #:hs-filter
-                      #:hs-to-list
-                      #:hs-first
-                      #:hs-pop
-                      #:hs-npop
-                      #:hs-union
-                      #:hs-nunion
-                      #:hs-intersection
-                      #:hs-nintersection
-                      #:hs-difference
-                      #:hs-ndifference
-                      #:hs-symmetric-difference
-                      #:hs-subsetp
-                      #:hs-supersetp
-                      #:hs-any
-                      #:hs-all
-                      #:hs-powerset
-                      #:hs-cartesian-product))))
+                      #:iota))))
 
 (in-package #:clean)
 
