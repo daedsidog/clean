@@ -1,7 +1,7 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
 (defpackage #:clean/list-extensions
-  (:use #:cl)
+  (:use #:clean/preamble)
   (:import-from #:alexandria #:flatten)
   (:export #:flatten #:duplicates #:unique #:cars #:recursive-mapl))
 

@@ -1,7 +1,7 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
 (defpackage #:clean/package-extensions
-  (:use #:cl)
+  (:use #:clean/preamble)
   (:import-from #:trivial-package-local-nicknames
                 #:add-package-local-nickname)
   (:export #:package-local-nicknames

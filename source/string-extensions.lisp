@@ -1,7 +1,7 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
 (defpackage #:clean/string-extensions
-  (:use #:cl)
+  (:use #:clean/preamble)
   (:export #:indent-string #:string-empty-p))
 
 (in-package #:clean/string-extensions)

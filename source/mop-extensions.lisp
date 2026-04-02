@@ -1,7 +1,7 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
 (defpackage #:clean/mop-extensions
-  (:use #:cl)
+  (:use #:clean/preamble)
   (:shadow #:defclass)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
