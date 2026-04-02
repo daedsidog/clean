@@ -1,5 +1,3 @@
-;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
-
 (defpackage #:clean/tests
   (:export #:run-tests)
   (:use #:clean))

@@ -1,5 +1,3 @@
-;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
-
 (defsystem #:clean
   :depends-on (#:alexandria #:closer-mop #:trivial-package-local-nicknames)
   :components ((:module "source"

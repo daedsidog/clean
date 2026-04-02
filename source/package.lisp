@@ -1,5 +1,3 @@
-;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
-
 (uiop:define-package #:clean
     (:use #:cl)
   (:shadowing-import-from #:clean/preamble #:equalp)

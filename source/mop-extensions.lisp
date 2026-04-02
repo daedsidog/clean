@@ -1,5 +1,3 @@
-;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
-
 (defpackage #:clean/mop-extensions
   (:use #:clean/preamble)
   (:shadow #:defclass)

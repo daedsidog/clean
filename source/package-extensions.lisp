@@ -1,5 +1,3 @@
-;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
-
 (defpackage #:clean/package-extensions
   (:use #:clean/preamble)
   (:import-from #:trivial-package-local-nicknames
