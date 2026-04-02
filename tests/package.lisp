@@ -2,7 +2,7 @@
 
 (defpackage #:clean/tests
   (:export #:run-tests)
-  (:use #:cl))
+  (:use #:clean))
 
 (in-package #:clean/tests)
 
