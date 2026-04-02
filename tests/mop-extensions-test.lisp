@@ -1,10 +1,10 @@
 ;;;; Copyright (C) 2024 DAEDSIDOG.  All rights reserved.
 
-(defpackage #:clean/tests/mop-extensions-tests
+(defpackage #:clean/tests/mop-extensions-test
   (:export #:run-tests)
   (:use #:clean #:fiveam #:clean/mop-extensions))
 
-(in-package #:clean/tests/mop-extensions-tests)
+(in-package #:clean/tests/mop-extensions-test)
 
 (defun run-tests ()
   (run! 'mop-test))

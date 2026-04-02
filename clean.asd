@@ -22,5 +22,5 @@
 (defsystem #:clean/tests
   :depends-on (#:clean #:fiveam)
   :components ((:module "tests"
-                :components ((:file "mop-extensions-tests")
-                             (:file "package" :depends-on ("mop-extensions-tests"))))))
+                :components ((:file "mop-extensions-test")
+                             (:file "package" :depends-on ("mop-extensions-test"))))))

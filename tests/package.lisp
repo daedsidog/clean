@@ -7,4 +7,4 @@
 (in-package #:clean/tests)
 
 (defun run-tests ()
-  (clean/tests/mop-extensions-tests:run-tests))
+  (clean/tests/mop-extensions-test:run-tests))
