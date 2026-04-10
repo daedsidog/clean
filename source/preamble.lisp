@@ -1,5 +1,5 @@
 (uiop:define-package #:clean/preamble
-    (:use #:cl)
+  (:use #:cl)
   (:shadow #:equalp)
   (:import-from #:alexandria
                 #:with-gensyms #:when-let #:if-let #:iota)
@@ -27,6 +27,7 @@
 (in-package #:clean/preamble)
 
 (defmacro alias (sym alias)
+  "Export ALIAS as a function alias for SYM."
   `(progn
      (setf (fdefinition ,alias) (fdefinition ,sym))
      (export ,alias)))

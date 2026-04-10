@@ -1,11 +1,22 @@
 (defpackage #:clean/mop-extensions
-  (:use #:clean/preamble)
+  (:use #:cl)
   (:shadow #:defclass)
+  (:import-from #:clean/preamble #:eqp)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
-           #:defclass))
+           #:defclass
+           #:invalid-class-parent-error))
 
 (in-package #:clean/mop-extensions)
+
+(define-condition invalid-class-parent-error (error)
+  ((child :initarg :child :reader invalid-class-parent-error-child)
+   (parents :initarg :parents :reader invalid-class-parent-error-parents))
+  (:documentation "Error signaled when a class is not a parent of the specified child.")
+  (:report (lambda (condition stream)
+             (format stream "One element in ~A is not a parent class of ~A."
+                     (invalid-class-parent-error-parents condition)
+                     (invalid-class-parent-error-child condition)))))
 
 (defun alias-parent-class-readers-for-child (child-class-symbol &rest parent-class-symbols)
   "Alias the readers of the parent classes for the child class.
@@ -13,8 +24,9 @@
 If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child class are used.
 If a parent reader or the direct parent's alias is exported, the child alias is also exported."
   (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
-      (error "One element in ~A is not a parent class of ~A."
-             parent-class-symbols child-class-symbol))
+      (error 'invalid-class-parent-error
+             :parents parent-class-symbols
+             :child child-class-symbol))
   (let ((parent-classes (or (mapcar #'find-class parent-class-symbols)
                             (mop:class-direct-superclasses (find-class child-class-symbol))))
         (child-package (symbol-package child-class-symbol)))
@@ -23,8 +35,7 @@ If a parent reader or the direct parent's alias is exported, the child alias is 
       (unless (mop:class-finalized-p parent-class)
         (mop:finalize-inheritance parent-class))
       ;; Process direct slots of the parent and all its ancestors
-      (loop :for ancestor-class :in (cons parent-class
-                                           (mop:class-precedence-list parent-class)) :do
+      (loop :for ancestor-class :in (cons parent-class (mop:class-precedence-list parent-class)) :do
         (loop :for slot :in (mop:class-direct-slots ancestor-class) :do
           (loop :for reader :in (mop:slot-definition-readers slot) :do
             (let* ((prefix (symbol-name (class-name ancestor-class)))
@@ -51,46 +62,33 @@ If a parent reader or the direct parent's alias is exported, the child alias is 
                   (multiple-value-bind (sym status)
                       (find-symbol (symbol-name reader) reader-package)
                     (declare (ignore sym))
-                    (when (eq status :external)
+                    (when (eqp status :external)
                       (setf should-export t))))
                 ;; Check direct parent's alias
                 (unless should-export
-                  (let* ((parent-name (format nil "~A~A"
-                                              (symbol-name (class-name parent-class))
-                                              reader-name-without-prefix))
-                         (parent-pkg (symbol-package (class-name parent-class))))
+                  (let ((parent-name (format nil "~A~A"
+                                             (symbol-name (class-name parent-class))
+                                             reader-name-without-prefix))
+                        (parent-pkg (symbol-package (class-name parent-class))))
                     (multiple-value-bind (sym status)
                         (find-symbol parent-name parent-pkg)
                       (declare (ignore sym))
-                      (when (eq status :external)
+                      (when (eqp status :external)
                         (setf should-export t)))))
                 (when should-export
                   (export new-reader-symbol child-package))))))))))
 
 (defmacro defclass (name direct-superclasses direct-slots &body options)
-  "Define a class with extended DEFCLASS options:
+  "Define a class as with CL:DEFCLASS, with one additional class option: :ALIAS-PARENT-READERS.
 
-ALIAS-PARENT-READERS ::= generalized-boolean"
-  ;; When true, calls ALIAS-PARENT-CLASS-READERS-FOR-CHILD on the class.
-  ;;
-  ;; Example:
-  ;;
-  ;;   (cl:defclass drawable ()
-  ;;     ((left :initarg :left :accessor drawable-left)))
-  ;;
-  ;;   (defclass polygon (drawable)
-  ;;     ((points :initarg :points :reader polygon-points))
-  ;;     (:alias-parent-readers t))
-  ;;
-  ;; This creates POLYGON and also defines POLYGON-LEFT as an alias for DRAWABLE-LEFT:
-  ;;
-  ;;   (let ((p (make-instance 'polygon :left 10 :points '())))
-  ;;     (polygon-left p))            ; => 10
-  ;;     (drawable-left p))           ; => 10
-  ;;     (setf (polygon-left p) 20)   ; Works if slot has writer
-  ;;     (setf (drawable-left p) 20)) ; Works
-  (let* ((alias-parent-readers (second (find :alias-parent-readers options :key #'car)))
-         (standard-options (remove :alias-parent-readers options :key #'car)))
+When :ALIAS-PARENT-READERS is true, reader functions inherited from each superclass are aliased with
+NAME as the prefix.  For example, if superclass FOO defines reader FOO-SLOT, child BAR receives
+BAR-SLOT bound to the same function.  SETF functions are aliased likewise.  If the original reader
+is exported from its home package, the alias is exported from the child package.
+
+All other options are passed through to CL:DEFCLASS unchanged."
+  (let ((alias-parent-readers (second (find :alias-parent-readers options :key #'car)))
+        (standard-options (remove :alias-parent-readers options :key #'car)))
     `(progn
        (cl:defclass ,name ,direct-superclasses ,direct-slots ,@standard-options)
        ,@(when alias-parent-readers

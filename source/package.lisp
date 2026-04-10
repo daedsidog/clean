@@ -1,5 +1,5 @@
 (uiop:define-package #:clean
-    (:use #:cl)
+  (:use #:cl)
   (:shadowing-import-from #:clean/preamble #:equalp)
   (:shadowing-import-from #:clean/mop-extensions #:defclass)
   (:reexport #:cl)

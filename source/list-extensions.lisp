@@ -1,11 +1,12 @@
 (defpackage #:clean/list-extensions
-  (:use #:clean/preamble)
+  (:use #:cl)
+  (:import-from #:clean/preamble #:eqp)
   (:import-from #:alexandria #:flatten)
   (:export #:flatten #:duplicates #:unique #:cars #:recursive-mapl))
 
 (in-package #:clean/list-extensions)
 
-(defun duplicates (data-list &optional &key (test #'eqp))
+(defun duplicates (data-list &key (test #'eqp))
   "Return a list of duplicate elements in DATA-LIST."
   (check-type data-list list)
   (let ((hash (make-hash-table :test test)))
@@ -14,7 +15,7 @@
           :collect x :into dupes
           :finally (return dupes))))
 
-(defun unique (data-list &optional &key (test #'eqp))
+(defun unique (data-list &key (test #'eqp))
   "Return a list of unique elements in DATA-LIST."
   (let ((hash (make-hash-table :test test)))
     (loop :for x :in data-list

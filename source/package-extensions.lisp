@@ -1,5 +1,5 @@
 (defpackage #:clean/package-extensions
-  (:use #:clean/preamble)
+  (:use #:cl)
   (:import-from #:trivial-package-local-nicknames
                 #:add-package-local-nickname)
   (:export #:package-local-nicknames

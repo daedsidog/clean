@@ -1,5 +1,5 @@
 (defpackage #:clean/string-extensions
-  (:use #:clean/preamble)
+  (:use #:cl)
   (:export #:indent-string #:string-empty-p))
 
 (in-package #:clean/string-extensions)

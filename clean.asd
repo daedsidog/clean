@@ -1,5 +1,6 @@
-(defsystem #:clean
-  :depends-on (#:alexandria #:closer-mop #:trivial-package-local-nicknames)
+(defsystem "clean"
+  :depends-on ("alexandria" "closer-mop" "trivial-package-local-nicknames")
+  :serial t
   :components ((:module "source"
                 :components ((:file "preamble")
                              (:file "list-extensions"
