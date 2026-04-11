@@ -1,4 +1,7 @@
 (defsystem "clean"
+  :description "Common-Lisp extensions and normalizations."
+  :author "Jan Jouleodov"
+  :license "MIT"
   :depends-on ("alexandria" "closer-mop" "trivial-package-local-nicknames")
   :serial t
   :components ((:module "source"
