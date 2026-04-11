@@ -1,9 +1,9 @@
 (uiop:define-package #:clean
   (:use #:cl)
-  (:shadowing-import-from #:clean/preamble #:equalp)
+  (:shadowing-import-from #:clean/aliases #:equalp)
   (:shadowing-import-from #:clean/mop-extensions #:defclass)
   (:reexport #:cl)
-  (:use-reexport #:clean/preamble
+  (:use-reexport #:clean/aliases
                  #:clean/list-extensions
                  #:clean/package-extensions
                  #:clean/string-extensions
@@ -14,7 +14,7 @@
 #+sbcl
 (progn
   (sb-ext:lock-package 'clean)
-  (sb-ext:lock-package 'clean/preamble)
+  (sb-ext:lock-package 'clean/aliases)
   (sb-ext:lock-package 'clean/list-extensions)
   (sb-ext:lock-package 'clean/package-extensions)
   (sb-ext:lock-package 'clean/string-extensions)

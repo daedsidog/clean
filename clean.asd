@@ -2,24 +2,18 @@
   :depends-on ("alexandria" "closer-mop" "trivial-package-local-nicknames")
   :serial t
   :components ((:module "source"
-                :components ((:file "preamble")
-                             (:file "list-extensions"
-                              :depends-on ("preamble"))
-                             (:file "package-extensions"
-                              :depends-on ("preamble"))
-                             (:file "string-extensions"
-                              :depends-on ("preamble"))
-                             (:file "mop-extensions"
-                              :depends-on ("preamble"))
-                             (:file "package"
-                              :depends-on ("preamble"
-                                           "list-extensions"
-                                           "package-extensions"
-                                           "string-extensions"
-                                           "mop-extensions"))))))
+                :serial t
+                :components ((:file "aliases")
+                             (:file "list-extensions")
+                             (:file "package-extensions")
+                             (:file "string-extensions")
+                             (:file "mop-extensions")
+                             (:file "package")))))
 
 (defsystem "clean/tests"
   :depends-on ("clean" "fiveam")
+  :serial t
   :components ((:module "tests"
+                :serial t
                 :components ((:file "mop-extensions-test")
-                             (:file "package" :depends-on ("mop-extensions-test"))))))
+                             (:file "package")))))

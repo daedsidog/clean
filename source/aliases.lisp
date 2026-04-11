@@ -1,4 +1,4 @@
-(uiop:define-package #:clean/preamble
+(uiop:define-package #:clean/aliases
   (:use #:cl)
   (:shadow #:equalp)
   (:import-from #:alexandria
@@ -24,7 +24,7 @@
            #:iota)                    ;
   (:reexport #:cl))
 
-(in-package #:clean/preamble)
+(in-package #:clean/aliases)
 
 (defmacro alias (sym alias)
   "Export ALIAS as a function alias for SYM."
