@@ -1,12 +1,13 @@
 (defpackage #:clean/string-extensions
   (:use #:cl)
+  (:import-from #:clean/aliases #:nullp)
   (:export #:indent-string #:string-empty-p))
 
 (in-package #:clean/string-extensions)
 
 (defun string-empty-p (string)
-  "Return T if STRING contains no characters."
-  (not (loop :for char :across string :thereis char)))
+  "Return T if STRING contains no characters or is nil."
+  (or (nullp string) (zerop (length string))))
 
 (defun indent-string (string indentation-string)
   "Return the string indented with INDENTATION-STRING prepended to each line."
