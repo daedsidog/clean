@@ -1,9 +1,12 @@
 (defpackage #:clean/string-extensions
   (:use #:cl)
-  (:import-from #:clean/aliases #:nullp)
+  (:import-from #:clean/aliases #:nullp #:dispatch-macro-character)
+  (:import-from #:cl-interpol #:interpol-reader)
   (:export #:prefix-string #:string-empty-p))
 
 (in-package #:clean/string-extensions)
+
+(setf (dispatch-macro-character #\# #\?) #'interpol-reader)
 
 (defun string-empty-p (string)
   "Return T if STRING contains no characters or is nil."
