@@ -23,11 +23,11 @@ SKIP-FIRST-LINE is not nil."
       (let ((is-first-line t))
         (loop :for line = (read-line in nil nil)
               :while line
-              :do (if is-first-line
-                      (progn
-                        (setf is-first-line nil)
-                        (unless skip-first-line
-                          (format out "~A" prefix))
-                        (format out "~A" line))
-                      (format out "~%~A~A" prefix line)))))
+              :do (cond (is-first-line
+                          (setf is-first-line nil)
+                          (unless skip-first-line
+                            (format out "~A" prefix))
+                          (format out "~A" line))
+                        (t
+                          (format out "~%~A~A" prefix line))))))
     out))
