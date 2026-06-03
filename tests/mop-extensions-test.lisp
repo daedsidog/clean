@@ -53,14 +53,16 @@
     (is (string= "Reading" (funcall (symbol-function 'kid-hobby) instance)))))
 
 (test error-on-invalid-inheritance
-  "Verify that ALIAS-PARENT-CLASS-READERS-FOR-CHILD signals an error for non-parent classes."
+  "Verify that ALIAS-PARENT-CLASS-READERS-FOR-CHILD signals an error for
+non-parent classes."
   (defclass unrelated-class ()
     ((unrelated-slot :accessor unrelated-class-unrelated-slot)))
   (signals error
     (alias-parent-class-readers-for-child 'child 'unrelated-class)))
 
 (test auto-export-aliased-readers
-  "Verify that aliased readers inherit the export status of the original readers."
+  "Verify that aliased readers inherit the export status of the original
+readers."
   (let ((test-package (make-package (gensym "TEST-PACKAGE-") :use '(#:cl))))
     (unwind-protect
          (progn

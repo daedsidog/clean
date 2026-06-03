@@ -12,7 +12,8 @@
 (define-condition invalid-class-parent-error (error)
   ((child :initarg :child :reader invalid-class-parent-error-child)
    (parents :initarg :parents :reader invalid-class-parent-error-parents))
-  (:documentation "Error signaled when a class is not a parent of the specified child.")
+  (:documentation
+   "Error signaled when a class is not a parent of the specified child.")
   (:report (lambda (condition stream)
              (format stream "One element in ~A is not a parent class of ~A."
                      (invalid-class-parent-error-parents condition)
@@ -21,8 +22,9 @@
 (defun alias-parent-class-readers-for-child (child-class-symbol &rest parent-class-symbols)
   "Alias the readers of the parent classes for the child class.
 
-If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child class are used.
-If a parent reader or the direct parent's alias is exported, the child alias is also exported."
+If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child
+class are used.  If a parent reader or the direct parent's alias is exported,
+the child alias is also exported."
   (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
       (error 'invalid-class-parent-error
              :parents parent-class-symbols
@@ -55,7 +57,8 @@ If a parent reader or the direct parent's alias is exported, the child alias is 
               (when (fboundp `(setf ,reader))
                 (setf (fdefinition `(setf ,new-reader-symbol))
                       (fdefinition `(setf ,reader))))
-              ;; Export the new reader if the original reader or direct parent's alias is exported
+              ;; Export the new reader if the original reader or direct parent's
+              ;; alias is exported
               (let ((should-export nil))
                 ;; Check original reader
                 (when reader-package
@@ -79,12 +82,14 @@ If a parent reader or the direct parent's alias is exported, the child alias is 
                   (export new-reader-symbol child-package))))))))))
 
 (defmacro defclass (name direct-superclasses direct-slots &body options)
-  "Define a class as with CL:DEFCLASS, with one additional class option: :ALIAS-PARENT-READERS.
+  "Define a class as with CL:DEFCLASS, with one additional class option:
+:ALIAS-PARENT-READERS.
 
-When :ALIAS-PARENT-READERS is true, reader functions inherited from each superclass are aliased with
-NAME as the prefix.  For example, if superclass FOO defines reader FOO-SLOT, child BAR receives
-BAR-SLOT bound to the same function.  SETF functions are aliased likewise.  If the original reader
-is exported from its home package, the alias is exported from the child package.
+When :ALIAS-PARENT-READERS is true, reader functions inherited from each
+superclass are aliased with NAME as the prefix.  For example, if superclass FOO
+defines reader FOO-SLOT, child BAR receives BAR-SLOT bound to the same function.
+SETF functions are aliased likewise.  If the original reader is exported from
+its home package, the alias is exported from the child package.
 
 All other options are passed through to CL:DEFCLASS unchanged."
   (let ((alias-parent-readers (second (find :alias-parent-readers options :key #'car)))

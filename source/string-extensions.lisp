@@ -13,8 +13,8 @@
   (or (nullp string) (zerop (length string))))
 
 (defun prefix-string (string prefix &optional (skip-first-line nil))
-  "Return STRING prefixed with PREFIX prepended to each line, with the first line not prefixed if
-SKIP-FIRST-LINE is not nil."
+  "Return STRING prefixed with PREFIX prepended to each line, with the first
+line not prefixed if SKIP-FIRST-LINE is not nil."
   (when (or (string-empty-p string)
             (string-empty-p prefix))
     (return-from prefix-string string))
