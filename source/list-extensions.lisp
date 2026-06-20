@@ -25,14 +25,14 @@
 
 (defun cars (list)
   "Return the CAR of each nonempty list in LIST."
-  (let ((is-first-iteration t))
+  (let ((first-iteration-p t))
     (let ((cars (loop :for item :in list
                       :if (listp item)
                         :collect (nreverse (cars item)) :into cars
                       :else
-                        :when is-first-iteration
+                        :when first-iteration-p
                           :collect item :into cars
-                          :and :do (setf is-first-iteration nil)
+                          :and :do (setf first-iteration-p nil)
                       :finally (return cars))))
       (flatten cars))))
 

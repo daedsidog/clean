@@ -59,16 +59,16 @@ the child alias is also exported."
                       (fdefinition `(setf ,reader))))
               ;; Export the new reader if the original reader or direct parent's
               ;; alias is exported
-              (let ((should-export nil))
+              (let ((exportp nil))
                 ;; Check original reader
                 (when reader-package
                   (multiple-value-bind (sym status)
                       (find-symbol (symbol-name reader) reader-package)
                     (declare (ignore sym))
                     (when (eqp status :external)
-                      (setf should-export t))))
+                      (setf exportp t))))
                 ;; Check direct parent's alias
-                (unless should-export
+                (unless exportp
                   (let ((parent-name (format nil "~A~A"
                                              (symbol-name (class-name parent-class))
                                              reader-name-without-prefix))
@@ -77,8 +77,8 @@ the child alias is also exported."
                         (find-symbol parent-name parent-pkg)
                       (declare (ignore sym))
                       (when (eqp status :external)
-                        (setf should-export t)))))
-                (when should-export
+                        (setf exportp t)))))
+                (when exportp
                   (export new-reader-symbol child-package))))))))))
 
 (defmacro defclass (name direct-superclasses direct-slots &body options)
