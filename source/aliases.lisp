@@ -1,6 +1,6 @@
 (uiop:define-package #:clean/aliases
   (:use #:cl)
-  (:shadow #:equalp)
+  (:shadow #:equalp #:make-hash-table)
   (:import-from #:alexandria
                 #:with-gensyms #:when-let #:if-let #:iota)
   (:export #:atomp                    ; Predicate aliases
@@ -16,6 +16,7 @@
            #:string-not-equal-p       ;
            #:char-equal-p             ;
            #:char-not-equal-p         ;
+           #:make-hash-table          ; Hash table constructor
            #:universal-time           ; Getter aliases
            #:decoded-time             ;
            #:internal-real-time       ;
@@ -68,6 +69,29 @@
 
 (define-alias string-not-equal-p (string1 string2 &rest keyword-arguments)
   (apply #'cl:string-not-equal string1 string2 keyword-arguments))
+
+(defun normalize-hash-table-test (test)
+  "Map a suffixed equality predicate to the standard hash table test it names,
+leaving any other test designator untouched."
+  (let ((designator (if (functionp test)
+                        (multiple-value-bind (expression closure name)
+                            (function-lambda-expression test)
+                          (declare (ignore expression closure))
+                          (or name test))
+                        test)))
+    (case designator
+      ((eqp) 'cl:eq)
+      ((eqlp) 'cl:eql)
+      ((equalp) 'cl:equal)
+      ((equivalentp) 'cl:equalp)
+      (otherwise test))))
+
+(defun make-hash-table (&rest keyword-arguments)
+  "Create a hash table that accepts a suffixed equality predicate as its test."
+  (let ((test (getf keyword-arguments :test 'eql)))
+    (apply #'cl:make-hash-table
+           :test (normalize-hash-table-test test)
+           (alexandria:remove-from-plist keyword-arguments :test))))
 
 ;;; Standard accessor functions without redundant prefix
 
