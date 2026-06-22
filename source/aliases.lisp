@@ -9,6 +9,13 @@
            #:eqlp                     ;
            #:equalp                   ;
            #:equivalentp              ;
+           #:everyp                   ;
+           #:notanyp                  ;
+           #:noteveryp                ;
+           #:string-equalp            ;
+           #:string-not-equalp        ;
+           #:char-equalp              ;
+           #:char-not-equalp          ;
            #:universal-time           ; Getter aliases
            #:decoded-time             ;
            #:internal-real-time       ;
@@ -41,6 +48,26 @@
 (define-alias eqlp        (x y)    (cl:eql x y))
 (define-alias equalp      (x y)    (cl:equal x y))
 (define-alias equivalentp (x y)    (cl:equalp x y))
+(define-alias everyp (predicate sequence &rest more-sequences)
+  (apply #'cl:every predicate sequence more-sequences))
+
+(define-alias notanyp (predicate sequence &rest more-sequences)
+  (apply #'cl:notany predicate sequence more-sequences))
+
+(define-alias noteveryp (predicate sequence &rest more-sequences)
+  (apply #'cl:notevery predicate sequence more-sequences))
+
+(define-alias char-equalp (character &rest more-characters)
+  (apply #'cl:char-equal character more-characters))
+
+(define-alias char-not-equalp (character &rest more-characters)
+  (apply #'cl:char-not-equal character more-characters))
+
+(define-alias string-equalp (string1 string2 &rest keyword-arguments)
+  (apply #'cl:string-equal string1 string2 keyword-arguments))
+
+(define-alias string-not-equalp (string1 string2 &rest keyword-arguments)
+  (apply #'cl:string-not-equal string1 string2 keyword-arguments))
 
 ;;; Standard accessor functions without redundant prefix
 
