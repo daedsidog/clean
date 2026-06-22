@@ -1,6 +1,5 @@
 (defpackage #:clean/string-extensions
-  (:use #:cl)
-  (:import-from #:clean/aliases #:nullp #:dispatch-macro-character)
+  (:use #:clean/aliases)
   (:import-from #:cl-interpol #:interpol-reader)
   (:export #:prefix-string #:string-empty-p))
 

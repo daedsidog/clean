@@ -1,9 +1,11 @@
 (uiop:define-package #:clean/aliases
   (:use #:cl)
-  (:shadow #:equalp #:make-hash-table)
+  (:shadow #:eq #:equal #:null #:atom #:equalp #:make-hash-table)
   (:import-from #:alexandria
                 #:with-gensyms #:when-let #:if-let #:iota)
-  (:export #:atomp                    ; Predicate aliases
+  (:export #:atom                     ; Type specifiers
+           #:null                     ;
+           #:atomp                    ; Predicate aliases
            #:nullp                    ;
            #:eqp                      ;
            #:eqlp                     ;
@@ -34,6 +36,25 @@
 
 (in-package #:clean/aliases)
 
+(unexport '(eq
+            equal
+            every
+            notany
+            notevery
+            string-equal
+            string-not-equal
+            char-equal
+            char-not-equal
+            get-universal-time
+            get-decoded-time
+            get-internal-real-time
+            get-internal-run-time
+            get-output-stream-string
+            get-properties
+            get-setf-expansion
+            get-macro-character
+            get-dispatch-macro-character))
+
 (defmacro define-alias (name lambda-list &body body)
   "Define and export an inline wrapper forwarding to a Common Lisp function."
   `(progn
@@ -42,6 +63,9 @@
      (export ',name)))
 
 ;;; Predicate aliases postfixed with 'p'
+
+(deftype null () 'cl:null)
+(deftype atom () 'cl:atom)
 
 (define-alias atomp       (object) (cl:atom object))
 (define-alias nullp       (object) (cl:null object))

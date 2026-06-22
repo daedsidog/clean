@@ -1,6 +1,5 @@
 (defpackage #:clean/list-extensions
-  (:use #:cl)
-  (:import-from #:clean/aliases #:eqp)
+  (:use #:clean/aliases)
   (:import-from #:alexandria #:flatten)
   (:export #:flatten #:duplicates #:unique #:cars #:recursive-mapl))
 
