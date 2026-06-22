@@ -1,7 +1,6 @@
 (defpackage #:clean/mop-extensions
-  (:use #:cl)
+  (:use #:clean/aliases)
   (:shadow #:defclass #:defstruct)
-  (:import-from #:clean/aliases #:eqp)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
            #:defclass

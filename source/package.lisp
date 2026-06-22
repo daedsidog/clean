@@ -1,13 +1,10 @@
 (uiop:define-package #:clean
-  (:use #:cl)
-  (:shadowing-import-from #:clean/aliases #:equalp #:make-hash-table)
-  (:shadowing-import-from #:clean/mop-extensions #:defclass #:defstruct)
-  (:reexport #:cl)
   (:use-reexport #:clean/aliases
                  #:clean/list-extensions
                  #:clean/package-extensions
                  #:clean/string-extensions
-                 #:clean/mop-extensions))
+                 #:clean/mop-extensions)
+  (:shadowing-import-from #:clean/mop-extensions #:defclass #:defstruct))
 
 (in-package #:clean)
 
