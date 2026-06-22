@@ -1,10 +1,11 @@
 (defpackage #:clean/mop-extensions
   (:use #:cl)
-  (:shadow #:defclass)
-  (:import-from #:clean/aliases #:eqp)
+  (:shadow #:defclass #:defstruct)
+  (:import-from #:clean/aliases #:eqp #:everyp)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
            #:defclass
+           #:defstruct
            #:invalid-class-parent-error))
 
 (in-package #:clean/mop-extensions)
@@ -25,7 +26,7 @@
 If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child
 class are used.  If a parent reader or the direct parent's alias is exported,
 the child alias is also exported."
-  (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
+  (unless (everyp (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
       (error 'invalid-class-parent-error
              :parents parent-class-symbols
              :child child-class-symbol))
@@ -100,3 +101,28 @@ All other options are passed through to CL:DEFCLASS unchanged."
            `((alias-parent-class-readers-for-child ',name
                                              ,@(mapcar (lambda (class) `',class)
                                                        direct-superclasses)))))))
+
+(defun welded-predicate-name (structure-name)
+  "Return the CLEAN-conventional type-predicate name for STRUCTURE-NAME.
+A monomorpheme name welds the suffix P; a name carrying any hyphen dashes it."
+  (let ((name (symbol-name structure-name)))
+    (intern (concatenate 'string name (if (find #\- name) "-P" "P"))
+            (symbol-package structure-name))))
+
+(defmacro defstruct (name-and-options &body slot-descriptions)
+  "Define a structure as with CL:DEFSTRUCT, naming the generated type predicate
+by CLEAN's hyphen-count rule instead of ANSI's always-dashed default.
+
+A monomorpheme structure name yields a welded predicate (CAT yields CATP); a
+hyphenated name yields a dashed predicate (BIG-CAT yields BIG-CAT-P).  An
+explicit :PREDICATE option, including (:PREDICATE NIL), is honored verbatim, and
+all other options, including :CONC-NAME and :INCLUDE, pass through unchanged."
+  (multiple-value-bind (name options)
+      (if (consp name-and-options)
+          (values (car name-and-options) (cdr name-and-options))
+          (values name-and-options nil))
+    (let ((new-options
+            (if (assoc :predicate options)
+                options
+                (cons (list :predicate (welded-predicate-name name)) options))))
+      `(cl:defstruct (,name ,@new-options) ,@slot-descriptions))))
