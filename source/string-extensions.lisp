@@ -19,11 +19,11 @@ line not prefixed if SKIP-FIRST-LINE is not nil."
     (return-from prefix-string string))
   (with-output-to-string (out)
     (with-input-from-string (in string)
-      (let ((is-first-line t))
+      (let ((first-line t))
         (loop :for line = (read-line in nil nil)
               :while line
-              :do (cond (is-first-line
-                          (setf is-first-line nil)
+              :do (cond (first-line
+                          (setf first-line nil)
                           (unless skip-first-line
                             (format out "~A" prefix))
                           (format out "~A" line))
