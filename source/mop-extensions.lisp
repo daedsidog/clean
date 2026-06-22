@@ -25,7 +25,7 @@
 If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child
 class are used.  If a parent reader or the direct parent's alias is exported,
 the child alias is also exported."
-  (unless (every (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
+  (unless (everyp (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
       (error 'invalid-class-parent-error
              :parents parent-class-symbols
              :child child-class-symbol))
@@ -59,16 +59,16 @@ the child alias is also exported."
                       (fdefinition `(setf ,reader))))
               ;; Export the new reader if the original reader or direct parent's
               ;; alias is exported
-              (let ((should-export nil))
+              (let ((exporting nil))
                 ;; Check original reader
                 (when reader-package
                   (multiple-value-bind (sym status)
                       (find-symbol (symbol-name reader) reader-package)
                     (declare (ignore sym))
                     (when (eqp status :external)
-                      (setf should-export t))))
+                      (setf exporting t))))
                 ;; Check direct parent's alias
-                (unless should-export
+                (unless exporting
                   (let ((parent-name (format nil "~A~A"
                                              (symbol-name (class-name parent-class))
                                              reader-name-without-prefix))
@@ -77,8 +77,8 @@ the child alias is also exported."
                         (find-symbol parent-name parent-pkg)
                       (declare (ignore sym))
                       (when (eqp status :external)
-                        (setf should-export t)))))
-                (when should-export
+                        (setf exporting t)))))
+                (when exporting
                   (export new-reader-symbol child-package))))))))))
 
 (defmacro defclass (name direct-superclasses direct-slots &body options)
