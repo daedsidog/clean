@@ -26,32 +26,41 @@
 
 (in-package #:clean/aliases)
 
-(defmacro alias (sym alias)
-  "Export ALIAS as a function alias for SYM."
+(defmacro define-alias (name lambda-list &body body)
+  "Define and export an inline wrapper forwarding to a Common Lisp function."
   `(progn
-     (setf (fdefinition ,alias) (fdefinition ,sym))
-     (export ,alias)))
+     (declaim (inline ,name))
+     (defun ,name ,lambda-list ,@body)
+     (export ',name)))
 
 ;;; Predicate aliases postfixed with 'p'
 
-(alias 'cl:atom   'atomp)
-(alias 'cl:null   'nullp)
-(alias 'cl:eq     'eqp)
-(alias 'cl:eql    'eqlp)
-(alias 'cl:equal  'equalp)
-(alias 'cl:equalp 'equivalentp)
+(define-alias atomp       (object) (cl:atom object))
+(define-alias nullp       (object) (cl:null object))
+(define-alias eqp         (x y)    (cl:eq x y))
+(define-alias eqlp        (x y)    (cl:eql x y))
+(define-alias equalp      (x y)    (cl:equal x y))
+(define-alias equivalentp (x y)    (cl:equalp x y))
 
 ;;; Standard accessor functions without redundant prefix
 
-(alias 'cl:get-universal-time           'universal-time)
-(alias 'cl:get-decoded-time             'decoded-time)
-(alias 'cl:get-internal-real-time       'internal-real-time)
-(alias 'cl:get-internal-run-time        'internal-run-time)
-(alias 'cl:get-output-stream-string     'output-stream-string)
-(alias 'cl:get-properties               'properties)
-(alias 'cl:get-setf-expansion           'setf-expansion)
-(alias 'cl:get-macro-character          'macro-character)
-(alias 'cl:get-dispatch-macro-character 'dispatch-macro-character)
+(define-alias universal-time       ()       (cl:get-universal-time))
+(define-alias decoded-time         ()       (cl:get-decoded-time))
+(define-alias internal-real-time   ()       (cl:get-internal-real-time))
+(define-alias internal-run-time    ()       (cl:get-internal-run-time))
+(define-alias output-stream-string (stream) (cl:get-output-stream-string stream))
+(define-alias properties           (place indicator-list)
+  (cl:get-properties place indicator-list))
+
+(define-alias setf-expansion (place &optional environment)
+  (cl:get-setf-expansion place environment))
+
+(define-alias macro-character (character &optional (readtable *readtable*))
+  (cl:get-macro-character character readtable))
+
+(define-alias dispatch-macro-character
+    (disp-char sub-char &optional (readtable *readtable*))
+  (cl:get-dispatch-macro-character disp-char sub-char readtable))
 
 (define-setf-expander macro-character (char &optional (readtable '*readtable*))
   (with-gensyms (store char-var readtable-var)
