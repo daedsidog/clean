@@ -1,7 +1,7 @@
 (uiop:define-package #:clean
   (:use #:cl)
   (:shadowing-import-from #:clean/aliases #:equalp)
-  (:shadowing-import-from #:clean/mop-extensions #:defclass)
+  (:shadowing-import-from #:clean/mop-extensions #:defclass #:defstruct)
   (:reexport #:cl)
   (:use-reexport #:clean/aliases
                  #:clean/list-extensions

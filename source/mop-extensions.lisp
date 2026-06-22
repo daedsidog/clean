@@ -1,10 +1,11 @@
 (defpackage #:clean/mop-extensions
   (:use #:cl)
-  (:shadow #:defclass)
+  (:shadow #:defclass #:defstruct)
   (:import-from #:clean/aliases #:eqp)
   (:local-nicknames (#:mop #:closer-mop))
   (:export #:alias-parent-class-readers-for-child
            #:defclass
+           #:defstruct
            #:invalid-class-parent-error))
 
 (in-package #:clean/mop-extensions)
@@ -100,3 +101,21 @@ All other options are passed through to CL:DEFCLASS unchanged."
            `((alias-parent-class-readers-for-child ',name
                                              ,@(mapcar (lambda (class) `',class)
                                                        direct-superclasses)))))))
+
+(defun welded-predicate-name (structure-name)
+  "Return a structure's type predicate name, welded unless the name is hyphenated."
+  (let ((name (symbol-name structure-name)))
+    (intern (concatenate 'string name (if (find #\- name) "-P" "P"))
+            (symbol-package structure-name))))
+
+(defmacro defstruct (name-and-options &body slot-descriptions)
+  "Define a structure, welding the predicate suffix unless the name is hyphenated."
+  (multiple-value-bind (name options)
+      (if (consp name-and-options)
+          (values (car name-and-options) (cdr name-and-options))
+          (values name-and-options nil))
+    (let ((new-options
+            (if (assoc :predicate options)
+                options
+                (cons (list :predicate (welded-predicate-name name)) options))))
+      `(cl:defstruct (,name ,@new-options) ,@slot-descriptions))))
