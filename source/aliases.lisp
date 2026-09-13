@@ -2,7 +2,7 @@
   (:use #:cl)
   (:shadow #:eq #:equal #:null #:atom #:equalp #:make-hash-table)
   (:import-from #:alexandria
-                #:with-gensyms #:when-let #:if-let #:iota)
+                #:with-gensyms #:when-let #:if-let #:iota #:make-keyword)
   (:export #:atom                     ; Type specifiers
            #:null                     ;
            #:atomp                    ; Predicate aliases
@@ -31,7 +31,8 @@
            #:with-gensyms             ; Alexandria imports
            #:when-let                 ;
            #:if-let                   ;
-           #:iota)                    ;
+           #:iota                     ;
+           #:make-keyword)            ;
   (:reexport #:cl))
 
 (in-package #:clean/aliases)
