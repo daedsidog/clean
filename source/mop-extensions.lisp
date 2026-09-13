@@ -25,12 +25,26 @@
 If PARENT-CLASS-SYMBOLS are not provided, the direct superclasses of the child
 class are used.  If a parent reader or the direct parent's alias is exported,
 the child alias is also exported."
-  (unless (everyp (lambda (x) (subtypep child-class-symbol x)) parent-class-symbols)
+  ;; SUBTYPEP returns a second value that is false when it could not decide,
+  ;; which is what happens while the child class is still being compiled.
+  ;; A parent counts as valid unless SUBTYPEP decided against it.
+  (unless (everyp (lambda (parent)
+                    (multiple-value-bind (subtype-p certain-p)
+                        (subtypep child-class-symbol parent)
+                      (or subtype-p (not certain-p))))
+                  parent-class-symbols)
       (error 'invalid-class-parent-error
              :parents parent-class-symbols
              :child child-class-symbol))
-  (let ((parent-classes (or (mapcar #'find-class parent-class-symbols)
-                            (mop:class-direct-superclasses (find-class child-class-symbol))))
+  ;; Compiling a DEFCLASS does not build the class object, so FIND-CLASS finds
+  ;; nothing for a parent defined earlier in the same file.  Such a parent is
+  ;; left out of PARENT-CLASSES and aliased when the file is loaded.
+  (let ((parent-classes (if parent-class-symbols
+                            (remove nil (mapcar (lambda (symbol)
+                                                  (find-class symbol nil))
+                                                parent-class-symbols))
+                            (mop:class-direct-superclasses
+                             (find-class child-class-symbol))))
         (child-package (symbol-package child-class-symbol)))
     (loop :for parent-class :in parent-classes :do
       ;; The precedence list is available only after the class is finalized.
@@ -95,9 +109,10 @@ All other options are passed through to CL:DEFCLASS unchanged."
     `(progn
        (cl:defclass ,name ,direct-superclasses ,direct-slots ,@standard-options)
        ,@(when alias-parent-readers
-           `((alias-parent-class-readers-for-child ',name
-                                             ,@(mapcar (lambda (class) `',class)
-                                                       direct-superclasses)))))))
+           `((eval-when (:compile-toplevel :load-toplevel :execute)
+               (alias-parent-class-readers-for-child
+                ',name
+                ,@(mapcar (lambda (class) `',class) direct-superclasses))))))))
 
 (defun welded-predicate-name (structure-name)
   "Return a structure's type predicate name, welded unless the name is hyphenated."
