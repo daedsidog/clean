@@ -33,10 +33,10 @@ the child alias is also exported."
                             (mop:class-direct-superclasses (find-class child-class-symbol))))
         (child-package (symbol-package child-class-symbol)))
     (loop :for parent-class :in parent-classes :do
-      ;; Ensure the class is finalized before accessing its precedence list
+      ;; The precedence list is available only after the class is finalized.
       (unless (mop:class-finalized-p parent-class)
         (mop:finalize-inheritance parent-class))
-      ;; Process direct slots of the parent and all its ancestors
+      ;; The parent's own slots and every ancestor's slots both carry readers.
       (loop :for ancestor-class :in (cons parent-class (mop:class-precedence-list parent-class)) :do
         (loop :for slot :in (mop:class-direct-slots ancestor-class) :do
           (loop :for reader :in (mop:slot-definition-readers slot) :do
@@ -53,21 +53,19 @@ the child alias is also exported."
                                               child-package))
                    (reader-package (symbol-package reader)))
               (setf (symbol-function new-reader-symbol) (symbol-function reader))
-              ;; Also alias the SETF function if it exists
+              ;; A reader with a SETF function has that aliased too.
               (when (fboundp `(setf ,reader))
                 (setf (fdefinition `(setf ,new-reader-symbol))
                       (fdefinition `(setf ,reader))))
-              ;; Export the new reader if the original reader or direct parent's
-              ;; alias is exported
+              ;; The alias is exported when the original reader or the direct
+              ;; parent's alias is exported.
               (let ((exporting nil))
-                ;; Check original reader
                 (when reader-package
                   (multiple-value-bind (sym status)
                       (find-symbol (symbol-name reader) reader-package)
                     (declare (ignore sym))
                     (when (eqp status :external)
                       (setf exporting t))))
-                ;; Check direct parent's alias
                 (unless exporting
                   (let ((parent-name (format nil "~A~A"
                                              (symbol-name (class-name parent-class))
