@@ -28,6 +28,7 @@
            #:setf-expansion           ;
            #:macro-character          ;
            #:dispatch-macro-character ;
+           #:legacy-symbol-aliases    ; Alias listing
            #:with-gensyms             ; Alexandria imports
            #:when-let                 ;
            #:if-let                   ;
@@ -56,44 +57,47 @@
             get-macro-character
             get-dispatch-macro-character))
 
-(defmacro define-alias (name lambda-list &body body)
-  "Define and export an inline wrapper forwarding to a Common Lisp function."
-  `(progn
-     (declaim (inline ,name))
-     (defun ,name ,lambda-list ,@body)
-     (export ',name)))
+(defvar *legacy-symbol-aliases* '()
+  "Aliases defined so far, each paired with the Common Lisp symbol it replaces, the
+latest first.")
+
+(defmacro define-alias (name legacy-name lambda-list)
+  "Define and export an inline wrapper forwarding to the Common Lisp function
+LEGACY-NAME."
+  (multiple-value-bind (required optional rest) (alexandria:parse-ordinary-lambda-list lambda-list)
+    (let ((arguments (append required (mapcar #'first optional))))
+      `(progn
+         (declaim (inline ,name))
+         (defun ,name ,lambda-list
+           ,(if rest
+                `(apply #',legacy-name ,@arguments ,rest)
+                `(,legacy-name ,@arguments)))
+         (export ',name)
+         (pushnew (cons ',name ',legacy-name) *legacy-symbol-aliases* :key #'car)))))
+
+(defun legacy-symbol-aliases ()
+  "Return an alist pairing each alias CLEAN defines with the Common Lisp symbol it
+replaces."
+  (reverse (copy-alist *legacy-symbol-aliases*)))
 
 ;;; Predicate aliases postfixed with 'p'
 
 (deftype null () 'cl:null)
 (deftype atom () 'cl:atom)
 
-(define-alias atomp       (object) (cl:atom object))
-(define-alias nullp       (object) (cl:null object))
-(define-alias eqp         (x y)    (cl:eq x y))
-(define-alias eqlp        (x y)    (cl:eql x y))
-(define-alias equalp      (x y)    (cl:equal x y))
-(define-alias equivalentp (x y)    (cl:equalp x y))
-(define-alias everyp (predicate sequence &rest more-sequences)
-  (apply #'cl:every predicate sequence more-sequences))
-
-(define-alias notanyp (predicate sequence &rest more-sequences)
-  (apply #'cl:notany predicate sequence more-sequences))
-
-(define-alias noteveryp (predicate sequence &rest more-sequences)
-  (apply #'cl:notevery predicate sequence more-sequences))
-
-(define-alias char-equalp (character &rest more-characters)
-  (apply #'cl:char-equal character more-characters))
-
-(define-alias char-not-equalp (character &rest more-characters)
-  (apply #'cl:char-not-equal character more-characters))
-
-(define-alias string-equalp (string1 string2 &rest keyword-arguments)
-  (apply #'cl:string-equal string1 string2 keyword-arguments))
-
-(define-alias string-not-equalp (string1 string2 &rest keyword-arguments)
-  (apply #'cl:string-not-equal string1 string2 keyword-arguments))
+(define-alias atomp             cl:atom             (object))
+(define-alias nullp             cl:null             (object))
+(define-alias eqp               cl:eq               (x y))
+(define-alias eqlp              cl:eql              (x y))
+(define-alias equalp            cl:equal            (x y))
+(define-alias equivalentp       cl:equalp           (x y))
+(define-alias everyp            cl:every            (predicate sequence &rest more-sequences))
+(define-alias notanyp           cl:notany           (predicate sequence &rest more-sequences))
+(define-alias noteveryp         cl:notevery         (predicate sequence &rest more-sequences))
+(define-alias char-equalp       cl:char-equal       (character &rest more-characters))
+(define-alias char-not-equalp   cl:char-not-equal   (character &rest more-characters))
+(define-alias string-equalp     cl:string-equal     (string1 string2 &rest keyword-arguments))
+(define-alias string-not-equalp cl:string-not-equal (string1 string2 &rest keyword-arguments))
 
 (defun normalize-hash-table-test (test)
   "Map a suffixed equality predicate to the standard hash table test it names,
@@ -120,23 +124,18 @@ leaving any other test designator untouched."
 
 ;;; Standard accessor functions without redundant prefix
 
-(define-alias universal-time       ()       (cl:get-universal-time))
-(define-alias decoded-time         ()       (cl:get-decoded-time))
-(define-alias internal-real-time   ()       (cl:get-internal-real-time))
-(define-alias internal-run-time    ()       (cl:get-internal-run-time))
-(define-alias output-stream-string (stream) (cl:get-output-stream-string stream))
-(define-alias properties           (place indicator-list)
-  (cl:get-properties place indicator-list))
+(define-alias universal-time       cl:get-universal-time       ())
+(define-alias decoded-time         cl:get-decoded-time         ())
+(define-alias internal-real-time   cl:get-internal-real-time   ())
+(define-alias internal-run-time    cl:get-internal-run-time    ())
+(define-alias output-stream-string cl:get-output-stream-string (stream))
+(define-alias properties           cl:get-properties           (place indicator-list))
+(define-alias setf-expansion       cl:get-setf-expansion       (place &optional environment))
+(define-alias macro-character      cl:get-macro-character
+    (character &optional (readtable *readtable*)))
 
-(define-alias setf-expansion (place &optional environment)
-  (cl:get-setf-expansion place environment))
-
-(define-alias macro-character (character &optional (readtable *readtable*))
-  (cl:get-macro-character character readtable))
-
-(define-alias dispatch-macro-character
-    (disp-char sub-char &optional (readtable *readtable*))
-  (cl:get-dispatch-macro-character disp-char sub-char readtable))
+(define-alias dispatch-macro-character cl:get-dispatch-macro-character
+    (disp-char sub-char &optional (readtable *readtable*)))
 
 (define-setf-expander macro-character (char &optional (readtable '*readtable*))
   (with-gensyms (store char-var readtable-var)
