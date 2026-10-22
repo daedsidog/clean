@@ -11,7 +11,7 @@
       (sb-ext:unlock-package package))))
 
 (defsystem "clean"
-  :description "Common-Lisp extensions and normalizations."
+  :description "Common Lisp extensions and normalizations."
   :author "Jan Jouleodov"
   :license "MIT"
   :default-component-class clean-source-file
